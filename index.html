@@ -548,21 +548,7 @@
 					<h3>Right-click &rarr; Publish to Azure &rarr; DevOps!</h3>
 					<img class="plain stretch" src="images/rightclickpublish.png" />
 				</section>
-			<section>
-				<h3>Deploying a dacpac with
-					<code>sqlpackage.exe</code>
-				</h3>
-				<pre><code class="console stretch" data-trim>
-					C:\Users\Arapaima\source\repos\ChinookDb>"C:\Program Files (x86)
-					\Microsoft Visual Studio 14.0\
-					Common7\IDE\Extensions\Microsoft\
-					SQLDB\DAC\130\sqlpackage.exe" /Action:Publish
-					/SourceFile:.\ChinookDb\bin\Debug\ChinookDb.dacpac 
-					/Profile:./ChinookDb/commonsettings.publish.xml 
-					/TargetServerName:(local) 
-					/TargetDatabaseName:ChinookNew
-					</code></pre>
-			</section>
+			
 
 			<section>
 				<h3>The one true way...</h3>
@@ -739,7 +725,7 @@
 				<h2>Summary</h2>
 				<ul>
 					<li class="fragment">Continous Delivery depends on automation</li>
-					<li class="fragment">SSDT allows us to treat database deployments like application deployments</li>
+					<li class="fragment">SSDT and VSTS allow us to automate database deployments just like application deployments</li>
 					<li class="fragment">After everything is automated, the rest is down to you</li></ul>
 					<span class="fragment">
 						<hr/>
@@ -773,6 +759,7 @@
 		Reveal.initialize({
 			width: 1920,
 			height: 1080,
+			transition: 'none',
 			dependencies: [
 				{ src: 'plugin/markdown/marked.js' },
 				{ src: 'plugin/markdown/markdown.js' },
