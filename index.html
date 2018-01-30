@@ -1,60 +1,775 @@
 <!doctype html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<link rel="stylesheet" href="css/reveal.css">
-		<link rel="stylesheet" href="css/theme/black.css">
+	<title> Database Continuous Delivery with SSDT and VSTS</title>
 
-		<!-- Theme used for syntax highlighting of code -->
-		<link rel="stylesheet" href="lib/css/vs.css">
+	<link rel="stylesheet" href="css/reveal.css">
+	<link rel="stylesheet" href="css/theme/sky.css">
+	<link rel="stylesheet" href="css/gc.css" />
 
-		<!-- Printing and PDF exports -->
-		<script>
-			var link = document.createElement( 'link' );
-			link.rel = 'stylesheet';
-			link.type = 'text/css';
-			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
-			document.getElementsByTagName( 'head' )[0].appendChild( link );
-		</script>
-	</head>
-	<body>
-		<div class="reveal">
-			<div class="slides">
-				<section>Slide 1</section>
-				<section>
-					<pre><code class="tsql stretch" data-trim>
-					SELECT * from Northwind.dbo.Products;	
-					EXEC('SELECT * FROM Northwind.dbo.Products')
-					SELECT * FROM sys.dm_exec_requests
-					SELECT * FROM sys.dm_exec_sql_text(@sql_handle)
-					SELECT * FROM dbo.MyFunc(@some_param)
-					EXEC dbo.MyProc @apples='Oranges', @answer=42
-					DBCC CHECKDB('Northwind') WITH NO INFOMSGS
+	<!-- Theme used for syntax highlighting of code -->
+	<link rel="stylesheet" href="lib/css/vs.css">
 
+	<!-- Printing and PDF exports -->
+	<script>
+		var link = document.createElement('link');
+		link.rel = 'stylesheet';
+		link.type = 'text/css';
+		link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+		document.getElementsByTagName('head')[0].appendChild(link);
+	</script>
+</head>
+
+<body>
+	<div class="reveal">
+		<div class="slides">
+			<section>
+				<h1>Database Continuous Delivery with SSDT and VSTS</h1>
+				<hr/>
+				<h3>Gavin Campbell</h3>
+				<h3>
+					<a href="http://arapaima.uk">arapaima.uk</a>
+				</h3>
+			</section>
+			<section>
+				<h2>What about Devops?</h2>
+				<blockquote class="fragment">DevOps is the union of people, process, and products to enable continuous delivery of value to our end users.
+					<cite>
+						<a href=http://donovanbrown.com/post/what-is-devops>Donovan Brown</a>
+					</cite>
+				</blockquote>
+			</section>
+			<section>
+				<h2>Continuous Delivery</h2>
+				<blockquote>You achieve continuous delivery by
+					<span class="fragment highlight-blue">continuously integrating the software </span>
+					done by the development team,
+					<span class="fragment highlight-blue">
+						building executables</span>
+					, and
+					<span class="fragment highlight-blue">
+						running automated tests </span>
+					on those executables to detect problems. Furthermore you push the executables into increasingly production-like environments
+					to ensure the software will work in production. To do this you
+					<span class="fragment highlight-blue">
+						use a DeploymentPipeline</span>.
+					<cite>
+						<a href=https://martinfowler.com/bliki/ContinuousDelivery.html>Martin Fowler, "Continuous Delivery", martinfowler.com</a>
+					</cite>
+				</blockquote>
+
+			</section>
+			<section>
+				<h2>Continuous Delivery</h2>
+				<img class="stretch plain" src="images/columns.png" />
+			</section>
+
+			<section>
+				<h2>Continuous Delivery</h2>
+				<img class="stretch plain" src="images/Continuous_Delivery_process_diagram.svg" />
+				<cite>
+					<a href="https://commons.wikimedia.org/wiki/User:Gr%C3%A9goire_D%C3%A9trez">Grégoire Détrez</a>, original by Jez Humble,
+					<a href="https://commons.wikimedia.org/wiki/File:Continuous_Delivery_process_diagram.svg">Continuous Delivery process diagram</a>,
+					<a href="https://creativecommons.org/licenses/by-sa/4.0/legalcode">CC BY-SA 4.0</a>
+				</cite>
+
+				<aside class="notes">Original discussions mention moving through environments that are "progressively more production like". This is 10 years
+					ago.
+					<br/> From a Delivery perspective, the BIG WIN is that *all* environments are production like.</aside>
+			</section>
+
+			<section>
+				<h2>Why is this good?</h2>
+				<ul>
+					<li>Reduced Deployment Risk
+						<ul>
+							<li>Smaller changes</li>
+							<li>More practice</li>
+						</ul>
+					</li>
+					<li>Reduced Cycle time
+						<ul>
+							<li>Faster time to market</li>
+							<li>Faster feedback</li>
+							<li>Reduced inventory</li>
+						</ul>
+					</li>
+
+				</ul>
+
+			</section>
+
+			<section>
+				<h2>Delivering Applications</h2>
+				<ul>
+					<ul class="fragment">
+						<li>Microservices</li>
+						<li>Containers</li>
+						<li>Serverless Computing</li>
+					</ul>
+					<ul class="fragment">
+						<hr/>
+						<li>Scale on Demand</li>
+						<li>Feature Switches</li>
+						<li>Blue-Green Deployments</li>
+					</ul>
+					<ul class="fragment">
+						<hr/>
+						<li>Stateless Applications</li>
+						<li>Idempotent Deployments</li>
+						<li>Code-Config Separation</li>
+						<li>Code-Data Separation</li>
+					</ul>
+				</ul>
+			</section>
+
+			<section>
+				<h2>Delivering Databases</h2>
+				<ul>
+					<ul>
+						<li>The database is a big bundle of shared state</li>
+						<li>Code and Data mixed together</li>
+						<li>Code and Config mixed together</li>
+					</ul>
+					<ul class="fragment">
+						<hr/>
+						<li>Database deployments are:
+							<ul>
+								<li class="fragment">Different?</li>
+								<li class="fragment">Hard?</li>
+								<li class="fragment">Scary?</li>
+							</ul>
+						</li>
+
+					</ul>
+				</ul>
+			</section>
+			<section>
+				<p>
+					<i>All database deployments must be done by the DBA team...</i>
+				</p>
+				<img cite="Bundesarchiv, Bild 183-R0707-0001 / CC-BY-SA 3.0" class="stretch plain" src="images/dba-team.jpg" />
+
+
+			</section>
+
+			<section>
+				<img  class="plain stretch" src="images/mechanicalturk.jpg" />
+				<p>
+					<i>Automated on the outside,
+						<br/>manual on the inside?</i>
+				</p>
+			</section>
+			<section>
+				<h2>Source Control</h2>
+				<div id="left">
+					<img class="plain" src="images/Git-logo.svg" />
+				</div>
+				<div id="right">
+					<ul>
+						<li>Concerned with managing changes to
+							<i>text</i> files</i>
+						</li>
+						<li>These files need to be
+							<i>built</i> and
+							<i>deployed</i> before they are useful to our customers.</li>
+					</ul>
+				</div>
+
+			</section>
+			<section>
+				<h3>.NET Assemblies don't look like their source files</h3>
+				<div id="left">
+					<pre><code class="csharp" data-trim>
+							using System;
+							
+							namespace Hello
+							{
+							class Program
+							{
+							static void Main(string[] args)
+							{
+							Console.WriteLine("Hello World!");
+							}
+							}
+							}
+							
+						</code></pre>
+
+
+
+				</div>
+				<div id="right">
+					<pre><code data-trim>
+							00000080: 5045 0000 4c01 0300 d885 9f99 0000 0000  PE..L...........
+							00000090: 0000 0000 e000 2200 0b01 3000 0008 0000  ......"...0.....
+							000000a0: 0008 0000 0000 0000 5e26 0000 0020 0000  ........^&... ..
+							000000b0: 0040 0000 0000 4000 0020 0000 0002 0000  .@....@.. ......
+							000000c0: 0400 0000 0000 0000 0400 0000 0000 0000  ................
+							000000d0: 0080 0000 0002 0000 0000 0000 0300 4085  ..............@.
+							000000e0: 0000 1000 0010 0000 0000 1000 0010 0000  ................
+							000000f0: 0000 0000 1000 0000 0000 0000 0000 0000  ................
+							00000100: 0c26 0000 4f00 0000 0040 0000 5405 0000  .&..O....@..T...
+							00000110: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+							00000120: 0060 0000 0c00 0000 8c25 0000 3800 0000  .`.......%..8...
+							00000130: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+							00000140: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+							00000150: 0000 0000 0000 0000 0020 0000 0800 0000  ......... ......
+							00000160: 0000 0000 0000 0000 0820 0000 4800 0000  ......... ..H...
+								
 					</code></pre>
+
+				</div>
+
+
+			</section>
+
+			<section>
+				<h3>Database objects don't
+					<i>really</i> look like their source files.</h3>
+				<div id="left">
+					<pre><code class="sql stretch" data-trim>
+	
+							CREATE TABLE Employee
+							(EmployeeID INT NOT NULL 
+								PRIMARY KEY,
+							EmployeeName NVARCHAR(100) 
+								NOT NULL,
+							...
+							...)
+	
+								</code></pre>
+
+
+
+				</div>
+				<div id="right" class="fragment">
+					<pre><code class="stretch" data-trim>
+									0004a5c0: 3700 3600 3700 3000 1000 7300 0000 0100  7.6.7.0...s.....
+									0004a5d0: 0000 494e 0000 0500 0001 001f 002d 0031  ..IN.........-.1
+									0004a5e0: 0032 0038 0030 0010 0073 0000 0002 0000  .2.8.0...s......
+									0004a5f0: 0049 5800 0005 0000 0100 1d00 3100 3200  .IX.........1.2.
+									0004a600: 3700 3000 1000 7400 0000 0100 0000 494e  7.0...t.......IN
+									0004a610: 0000 0500 0001 0019 0030 0030 0010 0075  .........0.0...u
+									0004a620: 0000 0001 0000 0049 5800 0005 0000 0100  .......IX.......
+									0004a630: 3f00 3100 3800 3400 3400 3600 3700 3400  ?.1.8.4.4.6.7.4.
+									0004a640: 3400 3000 3700 3300 3700 3000 3900 3500  4.0.7.3.7.0.9.5.
+									0004a650: 3500 3100 3600 3100 3500 3000 1000 7600  5.1.6.1.5.0...v.
+									0004a660: 0000 0100 0000 4958 0000 0500 0001 002b  ......IX.......+
+									0004a670: 0034 0032 0039 0034 0039 0036 0037 0032  .4.2.9.4.9.6.7.2
+									0004a680: 0039 0035 0030 0010 0077 0000 0001 0000  .9.5.0...w......
+									0004a690: 0049 5800 0005 0000 0100 2100 3600 3500  .IX.......!.6.5.
+									0004a6a0: 3500 3300 3500 3000 1000 7800 0000 0100  5.3.5.0...x.....
+									0004a6b0: 0000 4958 0000 0500 0001 001d 0032 0035  ..IX.........2.5
+									0004a6c0: 0035 0030 0010 0079 0000 0001 0000 0049  .5.0...y.......I
+									0004a6d0: 4e00 0005 0000 0100 1900 3100 3000 1000  N.........1.0...
+									0004a6e0: c800 0000 0100 0000 4c4e 0000 0500 0001  ........LN......
+									0004a6f0: 0019 0031 0030 0010 00c9 0000 0001 0000  ...1.0..........
+									0004a700: 004c 4e00 0005 0000 0100 1900 3100 3000  .LN.........1.0.
+									0004a710: 1000 ca00 0000 0100 0000 4c4e 0000 0500  ..........LN....
+									0004a720: 0001 0019 0031 0030 0010 0007 0100 0001  .....1.0........    
+							</code></pre>
+
+				</div>
+
+			</section>
+			<section>
+				<h3>A simple deployment script</h3>
+				<pre><code class="powershell" data-trim>
+						param($serverName,$databaseName)
+						
+						foreach($sqlFile in gci *.sql){
+
+							Invoke-Sqlcmd  -InputFile $sqlFile -ServerInstance $serverName -Database $databaseName
+						}
+				</code></pre>
+			</section>
+			<section>
+				<h3>Version 1</h3>
+				<pre><code class="sql" data-trim>
+					CREATE PROCEDURE dbo.CreateAlbum
+					@albumId INT, @title NVARCHAR(160), @artistId INT
+					AS
+					INSERT INTO dbo.Album(AlbumId, Title, ArtistId)
+						VALUES (@albumId, @title, @artistId);
+								</code></pre>
+				<hr/>
+				<pre><code class="sh fragment" data-trim>
+
+								[gavin@THINKPAD sqlgit]$ git add CreateAlbum.Proc.sql
+								[gavin@THINKPAD sqlgit]$ git commit -m "Add Create Album Proc"
+								[master (root-commit) 5f3ee23] Add Create Album Proc
+									1 file changed, 10 insertions(+)
+									create mode 100644 CreateAlbum.Proc.sql
+								[gavin@THINKPAD sqlgit]$
+								</code></pre>
+				<hr/>
+				<pre><code class = "console fragment" data-trim>
+										Started executing query at Line 1									
+										Commands completed successfully. 
+										
+										Total execution time: 00:00:00.004</code></pre>
+
+			</section>
+			<section>
+				<h3>Version 2</h3>
+				<pre><code class="sql" data-trim>
+							CREATE PROCEDURE dbo.CreateAlbum
+							@albumId INT, @title NVARCHAR(160), @artistId INT, @recordLabel NVARCHAR(160)
+							AS
+							INSERT INTO dbo.Album(AlbumId, Title, ArtistId, RecordLabel)
+								VALUES (@albumId, @title, @artistId, @recordLabel);
+										</code></pre>
+				<hr/>
+				<pre><code class="sh fragment" data-trim  >
+
+							[sqlgit]$ git commit -am "Added RecordLabel to CreateAlbum Proc"
+							[master 24e9c00] Added RecordLabel to CreateAlbum Proc
+							 1 file changed, 6 insertions(+), 3 deletions(-)</code></pre>
+
+				<pre><code class="nohighlight fragment" style="color:red" data-trim>
+									Msg 2714, Level 16, State 3, Line 1
+									There is already an object named 'CreateAlbum' in the database. 
+										
+				</code></pre>
+
+			</section>
+			<section>
+				<h3>Version 2</h3>
+
+				<hr/>
+				<pre><code class="sql fragment" data-trim data-noescape>
+									CREATE <span class="fragment">OR ALTER</span> PROCEDURE dbo.CreateAlbum
+									@albumId INT, @title NVARCHAR(160), @artistId INT, @recordLabel NVARCHAR(160)
+									AS
+									INSERT INTO dbo.Album(AlbumId, Title, ArtistId, RecordLabel)
+										VALUES (@albumId, @title, @artistId, @recordLabel);
+												</code></pre>
+				<hr/>
+				<pre><code class="console fragment" data-trim>
+							
+					[gavin@THINKPAD sqlgit]$ git commit -am "Change to CREATE OR ALTER"
+					[master ee806dc] Change to CREATE OR ALTER
+						1 file changed, 1 insertion(+), 1 deletion(-)</code></pre>
+
+				<hr/>
+
+				<pre><code class = "console fragment" data-trim>
+						Started executing query at Line 1									
+						Commands completed successfully. 
+						
+						Total execution time: 00:00:00.004</code></pre>
+
+			</section>
+			<section>
+				<h3>What about tables?</h3>
+				<pre><code class="sql" data-trim data-noescape>
+							CREATE TABLE [dbo].[Playlist]
+							(
+								[PlaylistId] INT NOT NULL,
+								[Name] NVARCHAR(120),
+								CONSTRAINT [PK_Playlist] 
+									PRIMARY KEY CLUSTERED ([PlaylistId])
+							);
+							GO
+					</code></pre>
+				<hr/>
+				<pre><code class="console fragment">Commands completed successfully.</code></pre>
+			</section>
+			<section>
+				<h3>What about tables?</h3>
+				<pre><code class="sql" data-trim data-noescape>
+						CREATE TABLE [dbo].[Playlist]
+						(
+							[PlaylistId] INT NOT NULL,
+							[Name] NVARCHAR(120),
+							[FollowerCount] INT NULL
+							CONSTRAINT [PK_Playlist] 
+								PRIMARY KEY CLUSTERED ([PlaylistId])
+						);
+						GO
+				</code></pre>
+				<pre><code class="nohighlight fragment" style="color:red" data-trim>
+						Msg 2714, Level 16, State 6, Line 126
+						There is already an object named 'Playlist' in the database.</code></pre>
+			</section>
+			<section>
+				<h3>What about tables?</h3>
+				<pre><code class="sql" data-trim data-noescape>
+							CREATE OR ALTER TABLE [dbo].[Playlist]
+							(
+								[PlaylistId] INT NOT NULL,
+								[Name] NVARCHAR(120),
+								[FollowerCount] INT NULL
+								CONSTRAINT [PK_Playlist] 
+									PRIMARY KEY CLUSTERED ([PlaylistId])
+							);
+							GO
+					</code></pre>
+				<pre><code class="nohighlight fragment" style="color:red" data-trim>
+							Msg 156, Level 15, State 1, Line 126
+							Incorrect syntax near the keyword 'TABLE'.</code></pre>
+			</section>
+			<section>
+				<h3>Idempotent Scripts</h3>
+				<aside class="notes">Table definition was 12 lines in a 600 line file
+					<br/> £400 a day / 80 lines = £5 per line
+					<br/> File has cost £3k to develop, but only £60 is defining behaviour</aside>
+				<pre><code class="sql" data-trim data-noescape>
+							IF NOT EXISTS(SELECT * FROM sys.tables WHERE name = 'Playlist' 
+							AND OBJECT_SCHEMA_NAME(object_id) = 'dbo')
+							BEGIN
+							CREATE TABLE [dbo].[Playlist]
+							(
+								[PlaylistId] INT NOT NULL,
+								[Name] NVARCHAR(120),
+								FollowerCount INT NULL,
+								LastUpdated DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
+								CONSTRAINT [PK_Playlist] PRIMARY KEY CLUSTERED ([PlaylistId])
+							);
+							END
+							GO
+							
+							IF EXISTS(SELECT * FROM sys.tables WHERE name = 'Playlist' AND OBJECT_SCHEMA_NAME(object_id) = 'dbo')
+							AND NOT EXISTS
+							(SELECT * FROM sys.columns WHERE name = 'FollowerCount' AND object_id = OBJECT_ID('dbo.Playlist'))
+							BEGIN
+							ALTER TABLE dbo.PlayList ADD FollowerCount INT NULL
+							END
+							GO
+							IF EXISTS(SELECT * FROM sys.tables WHERE name = 'Playlist' AND OBJECT_SCHEMA_NAME(object_id) = 'dbo')
+							AND NOT EXISTS
+							(SELECT * FROM sys.columns WHERE name = 'LastUpdated' AND object_id = OBJECT_ID('dbo.Playlist'))
+							BEGIN
+							ALTER TABLE dbo.PlayList ADD LastUpdated DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
+							END
+							GO
+						   	</code></pre>
+			</section>
+
+			<section>
+				<h1>SSDT</h1>
+				<h2>A better way?</h2>
+
+			</section>
+			<section>
+				<h3>SQL Server Data Tools</h3>
+				<blockquote>SQL Server Data Tools (SSDT) transforms database development by introducing a ubiquitous, declarative model that spans
+					all the phases of database development inside Visual Studio. You can use SSDT Transact-SQL design capabilities to build,
+					debug, maintain, and refactor databases.</blockquote>
+				<cite><a href = "https://msdn.microsoft.com/en-us/library/hh272686.aspx">MSDN</a></cite> 
+			</section>
+			<section>
+				<h3>A table definition in SSDT</h3>
+				<img class="plain stretch" src="images/ssdtoverview.png" />
+			</section>
+			<section>
+				<h3>Building the project</h3>
+				<img class="plain stretch" src="images/buildproject.png" /> </section>
+			<section>
+				<h3>Building the project</h3>
+				<img class="plain stretch" src="images/buildoutput.png" />
+			</section>
+			<section>
+				<h3>Inside the dacpac</h3>
+				<img class="plain stretch" src="images/insideTheDacpac.png" />
+			</section>
+			<section>
+				<h3>Errors and warnings</h3>
+				<img class="plain stretch" src="images/oneErrorOneWarning.png" />
+			</section>
+
+
+			<section>
+				<h3>Making a change</h3>
+				<img class="plain stretch" src="images/committingAChange.PNG" />
+			</section>
+			<section>
+				<h3>Publishing the dacpac</h3>
+				<img class="plain stretch" src="images/publishdialog.PNG" />
+			</section>
+			<section>
+				<h3>Publishing the dacpac</h3>
+				<img class="plain stretch" src="images/publishResults.PNG" />
+			</section>
+			<section>
+				<h3>Didn't really mean to do that...</h3>
+				<img class="plain stretch" src="images/gitReset.PNG" />
+			</section>
+			<section>
+				<h3>Didn't really mean to do that...</h3>
+				<img class="plain stretch" src="images/droppingAColumn.PNG" />
+			</section>
+			<section>
+				<h3>Composite Projects</h3>
+				<img class="plain stretch" src="images/compositeproj.png" />
+			</section>
+			<section>
+				<h3>Composite Projects</h3>
+				<img class="plain stretch" src="images/projectreferences.png" />
+			</section>
+
+			<section>
+				<h3>A tSQLt test</h3>
+				<pre><code class="sql stretch" data-trim>
+						CREATE PROCEDURE [AddArtist].[test single artist inserted correctly]
+						
+						AS
+							EXEC tsqlt.FakeTable 'dbo.Artist';
+							DECLARE @artistId int = 123, 
+								@artistName nvarchar(100) = 'Showaddywaddy';
+						
+							EXEC dbo.AddArtist @artistId = @artistId, 
+								@artistName = @artistName;
+							
+							SELECT @artistId as ArtistId, @artistName as [Name] 
+								INTO Expected;
+							SELECt ArtistId, [Name] INTO Actual FROM dbo.Artist;
+						
+							EXEC tSQLt.AssertEqualsTable 'Expected', 'Actual';
+						
+						RETURN 0
+							
+				</code></pre>
+			</section>
+			<section>
+				<h3>Saving Publish Profiles</h3>
+				<img class="plain stretch" src="images/saveProfileAs.PNG" />
+			</section>
+			<section>
+				<h3>Saving Publish Profiles</h3>
+				<img class="plain stretch" src="images/publishProfilesInSolutionExplorer.PNG" />
+			</section>
+			<section>
+					<h3>Right-click &rarr; Publish to Azure &rarr; DevOps!</h3>
+					<img class="plain stretch" src="images/rightclickpublish.png" />
 				</section>
-			</div>
+			<section>
+				<h3>Deploying a dacpac with
+					<code>sqlpackage.exe</code>
+				</h3>
+				<pre><code class="console stretch" data-trim>
+					C:\Users\Arapaima\source\repos\ChinookDb>"C:\Program Files (x86)
+					\Microsoft Visual Studio 14.0\
+					Common7\IDE\Extensions\Microsoft\
+					SQLDB\DAC\130\sqlpackage.exe" /Action:Publish
+					/SourceFile:.\ChinookDb\bin\Debug\ChinookDb.dacpac 
+					/Profile:./ChinookDb/commonsettings.publish.xml 
+					/TargetServerName:(local) 
+					/TargetDatabaseName:ChinookNew
+					</code></pre>
+			</section>
+
+			<section>
+				<h3>The one true way...</h3>
+				<pre><code class="powershell stretch" data-trim>
+							$serverName=$env:Chinook_ServerName
+							$dbName = $env:Chinook_DatabaseName
+							$dbUser = $env:Chinook_DbUser
+							$dbPassword = $env:Chinook_DbPassword
+							
+							$dacFxDll='C:\Program Files (x86)\Microsoft SQL Server\140\DAC\bin\Microsoft.SqlServer.Dac.dll'
+							
+							Add-Type -Path $dacFxDll
+							$dacServices = New-Object Microsoft.SqlServer.Dac.DacServices "server=$serverName;User ID=$dbUser;Password=$dbPassword;"
+							
+							$dacpacPath=Join-Path -Path $PSScriptRoot -ChildPath "\bin\Debug\ChinookDb.dacpac"
+							$publishProfilePath = Join-Path -Path $PSScriptRoot -ChildPath "CommonSettings.publish.xml"
+							
+							$dacpac = [Microsoft.SqlServer.Dac.DacPackage]::Load($dacpacPath)
+							$dacProfile = [Microsoft.SqlServer.Dac.DacProfile]::Load($publishProfilePath)
+							
+							$dacServices.Deploy($dacpac, $dbName, $true, $dacProfile.DeployOptions )
+								
+					</code></pre>
+			</section>
+
+			<section>
+				<h3>The
+					<i>new</i> true way...</h3>
+				<pre><code class="powershell stretch" data-trim>
+									$serverName=$env:Chinook_ServerName
+									$dbName = $env:Chinook_DatabaseName
+									$dbUser = $env:Chinook_DbUser
+									$dbPassword = $env:Chinook_DbPassword
+									
+									Install-PackageProvider NuGet -Force -Scope CurrentUser
+									Import-PackageProvider NuGet -Force 
+									Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+									
+									Install-Module -Name dbatools -Scope CurrentUser -MinimumVersion 0.9.188 
+									
+									$dacpacPath=Join-Path -Path $PSScriptRoot -ChildPath "\bin\Debug\ChinookDb.dacpac"
+									$publishProfilePath = Join-Path -Path $PSScriptRoot -ChildPath "CommonSettings.publish.xml"
+									
+									$pwd = $dbPassword | ConvertTo-SecureString -AsPlainText -Force
+									$pwd.MakeReadOnly()
+									$creds = New-Object System.Management.Automation.PSCredential($dbUser, $pwd)
+									
+									Publish-DbaDacpac -SqlInstance $serverName -Database $dbName -Credential $creds -Path $dacpacPath -PublishXml $publishProfilePath</code></pre>
+				<cite>
+					<a href="https://dbatools.io/functions/publish-dbadacpac">dbatools.io: Publish-DbaDacpac</a>
+				</cite>
+			</section>
+
+
+
+			<section>
+				<h2>Playing nicely with the other children</h2>
+			</section>
+
+			<section>
+				<h4>Playing nicely with the other children</h4>
+				<img class="stretch" src="images/CommitChangeToNewBranch.png" />
+			</section>
+			<section>
+				<h4>Playing nicely with the other children</h4>
+				<img class="stretch" src="images/pushtoserver.png" />
+			</section>
+			<section>
+				<h4>A server branch</h4>
+				<img class="stretch" src="images/branchlist.png" />
+			</section>
+			<section>
+				<h4>Creating a Pull Request</h4>
+				<img class="stretch" src="images/pullrequest1.png" />
+			</section>
+			<section>
+				<h4>Creating a Pull Request</h4>
+				<img class="stretch" src="images/pullrequest2.png" />
+			</section>
+			<section>
+				<h4>Creating a Pull Request</h4>
+				<img class="stretch" src="images/pullrequest3.png" />
+			</section>
+			<section>
+				<h4>meanwhile, in the cloud...</h4>
+				<img class="stretch" src="images/buildinprogress.png" />
+			</section>
+			<section>
+				<h4>Branch Policy</h4>
+				<img class="stretch" src="images/branchpolicy.png" />
+			</section>
+			<section>
+				<h4>The build definition</h4>
+				<img class="stretch" src="images/builddefinition.png" />
+			</section>
+			<section>
+				<h4>Build Configuration</h4>
+				<img class="stretch" src="images/buildvariables.png" />
+			</section>
+			<section>
+				<h4>Retrieving a Secret Variable</h4>
+				<img class="stretch" src="images/setEnvVar.png" />
+				<cite><a href="http://arapaima.uk/post/2017-10-23-vsts-secret-environment-variables/">Link to more detailed explanation</a></cite>
+			</section>
+			<section>
+				<h4>Open the firewall</h4>
+				<img class="stretch" src="images/OpenAzureFirewall.png" />
+
+			</section>
+			<section>
+				<h4>Deploying the database</h4>
+				<img class="stretch" src="images/BuildDefinition.png" />
+			</section>
+			<section>
+				<h4>Running Tests</h4>
+				<img class="stretch" src="images/runningtests.png" />
+			</section>
+			<section>
+				<h4>Approving the Pull Request</h4>
+				<img src="images/completepr.png" />
+				<hr/>
+				<img class="fragment" src="images/postmergebuildinprogress.png" />
+			</section>
+			<section>
+				<h4>The CI Trigger</h4>
+				<img class="stretch" src="images/BuildTrigger.png" />
+			</section>
+
+
+			<section>
+				<h4>Saving the Build Artifacts</h4>
+				<img class="stretch" src="images/copyartifactsonlyformaster.png" />
+			</section>
+
+			<section>
+				<h4>Release Management</h4>
+				<img class="stretch" src="images/releaseProcess.png" />
+			</section>
+			<section>
+				<h4>Release Management</h4>
+				<img class="stretch" src="images/createreleasestep.png" />
+			</section>
+			<section>
+				<h4>Release Management</h4>
+				<img class="stretch" src="images/allreleasesteps.png" />
+			</section>
+			<section>
+				<h4>Release Configuration</h4>
+				<img class="stretch" src="images/releasevariables.png" />
+			</section>
+			<section>
+				<h4>The default queue</h4>
+				<img class="stretch" src="images/productiondeploy.png" />
+			</section>
+		<section>
+			<section>
+				<h4>Release Management</h4>
+				<img class="stretch" src="images/QAReleaseInProgress.png" />
+			</section>
+			<section>
+				<h4>Release Conditions</h4>
+				<img class="stretch" src="images/predeploymentapproval.png" />
+			</section>
+
+				<h4>Making the boss feel useful</h4>
+				<img class="stretch" src="images/approvalpending.png" />
+			</section>
+			<section>
+				<h4>Fire in the hole...</h4>
+				<img class="stretch" src="images/ProductionInProgress.png" />
+			</section>
+			
+			<section>
+				<h2>Thanks for listening...</h2>
+			</section>
+
+
+
+
+
 		</div>
+	</div>
 
-		<script src="lib/js/head.min.js"></script>
-		<script src="js/reveal.js"></script>
 
-		<script>
-			// More info about config & dependencies:
-			// - https://github.com/hakimel/reveal.js#configuration
-			// - https://github.com/hakimel/reveal.js#dependencies
-			Reveal.initialize({
-				dependencies: [
-					{ src: 'plugin/markdown/marked.js' },
-					{ src: 'plugin/markdown/markdown.js' },
-					{ src: 'plugin/notes/notes.js', async: true },
-					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
-				]
-			});
-		</script>
-	</body>
+
+
+	</div>
+	</div>
+
+	<script src="lib/js/head.min.js"></script>
+	<script src="js/reveal.js"></script>
+
+	<script>
+		// More info about config & dependencies:
+		// - https://github.com/hakimel/reveal.js#configuration
+		// - https://github.com/hakimel/reveal.js#dependencies
+		Reveal.initialize({
+			width: 1920,
+			height: 1080,
+			dependencies: [
+				{ src: 'plugin/markdown/marked.js' },
+				{ src: 'plugin/markdown/markdown.js' },
+				{ src: 'plugin/notes/notes.js', async: true },
+				{ src: 'plugin/highlight/highlight.js', async: true, callback: function () { hljs.initHighlightingOnLoad(); } }
+			]
+		});
+	</script>
+</body>
+
 </html>
