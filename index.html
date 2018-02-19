@@ -36,10 +36,14 @@
 				</h3>
 			</section>
 			<section>
+				<h2>Stay in touch</h2>
+				<iframe class="stretch" data-src=http://arapaima.uk/fixed/about/></iframe>
+			</section>
+			<section>
 				<h2>What about Devops?</h2>
 				<blockquote class="fragment">DevOps is the union of people, process, and products to enable continuous delivery of value to our end users.
 					<cite>
-						<a href=http://donovanbrown.com/post/what-is-devops>Donovan Brown</a>
+						<a href="http://donovanbrown.com/post/what-is-devops">Donovan Brown</a>
 					</cite>
 				</blockquote>
 			</section>
@@ -70,7 +74,33 @@
 
 			<section>
 				<h2>Continuous Delivery</h2>
-				<img class="stretch plain" src="images/Continuous_Delivery_process_diagram.svg" />
+				<img class="stretch plain" src="images/Continuous_Delivery_process_diagram.svg.png" />
+				<cite>
+					<a href="https://commons.wikimedia.org/wiki/User:Gr%C3%A9goire_D%C3%A9trez">Grégoire Détrez</a>, original by Jez Humble,
+					<a href="https://commons.wikimedia.org/wiki/File:Continuous_Delivery_process_diagram.svg">Continuous Delivery process diagram</a>,
+					<a href="https://creativecommons.org/licenses/by-sa/4.0/legalcode">CC BY-SA 4.0</a>
+				</cite>
+
+				<aside class="notes">Talk through steps.
+					<br/>What is the difference between this and waterfall?</aside>
+			</section>
+			<section>
+				<h2>Like a waterfall?</h2>
+				<img class="stretch plain" src="images/Continuous_Delivery_process_diagram_overlay.svg.png" />
+			</section>
+			<section>
+				<h2>Continuous Delivery</h2>
+				<img class="stretch plain" src="images/Continuous_Delivery_process_diagram.svg.png" />
+				<cite>
+					<a href="https://commons.wikimedia.org/wiki/User:Gr%C3%A9goire_D%C3%A9trez">Grégoire Détrez</a>, original by Jez Humble,
+					<a href="https://commons.wikimedia.org/wiki/File:Continuous_Delivery_process_diagram.svg">Continuous Delivery process diagram</a>,
+					<a href="https://creativecommons.org/licenses/by-sa/4.0/legalcode">CC BY-SA 4.0</a>
+				</cite>
+
+			</section>
+			<section>
+				<h2>Continuous Delivery</h2>
+				<img class="stretch plain" src="images/Continuous_Delivery_process_diagram_red_highlight.svg.png" />
 				<cite>
 					<a href="https://commons.wikimedia.org/wiki/User:Gr%C3%A9goire_D%C3%A9trez">Grégoire Détrez</a>, original by Jez Humble,
 					<a href="https://commons.wikimedia.org/wiki/File:Continuous_Delivery_process_diagram.svg">Continuous Delivery process diagram</a>,
@@ -154,11 +184,16 @@
 				</p>
 				<img cite="Bundesarchiv, Bild 183-R0707-0001 / CC-BY-SA 3.0" class="stretch plain" src="images/dba-team.jpg" />
 
+				<aside class="notes">...so what's wrong with this picture?
+					<br/>
+					<ul>Static Analysis</ul>
+					<br/> Tools? FXCop, SonarQube, Coverity, etc.</aside>
+
 
 			</section>
 
 			<section>
-				<img  class="plain stretch" src="images/mechanicalturk.jpg" />
+				<img class="plain stretch" src="images/mechanicalturk.jpg" />
 				<p>
 					<i>Automated on the outside,
 						<br/>manual on the inside?</i>
@@ -227,6 +262,12 @@
 
 
 			</section>
+			<section>
+				<h3>Web pages
+					<i>do</i> look like their source files.</h3>
+				<aside class="notes">Ctrl-U to show source
+					<br/>Ctrl-F4 to hide</aside>
+			</section>
 
 			<section>
 				<h3>Database objects don't
@@ -235,12 +276,13 @@
 					<pre><code class="sql stretch" data-trim>
 	
 							CREATE TABLE Employee
-							(EmployeeID INT NOT NULL 
-								PRIMARY KEY,
-							EmployeeName NVARCHAR(100) 
-								NOT NULL,
-							...
-							...)
+							(
+							EmployeeID INT NOT NULL PRIMARY KEY,
+							EmployeeName NVARCHAR(100) NOT NULL,
+							EmployeeAddress1 NVARCHAR(50) NOT NULL,
+							EmployeeAddress2 NVARCHAR(50) NOT NULL,
+							...,
+							...);
 	
 								</code></pre>
 
@@ -461,7 +503,9 @@
 				<blockquote>SQL Server Data Tools (SSDT) transforms database development by introducing a ubiquitous, declarative model that spans
 					all the phases of database development inside Visual Studio. You can use SSDT Transact-SQL design capabilities to build,
 					debug, maintain, and refactor databases.</blockquote>
-				<cite><a href = "https://msdn.microsoft.com/en-us/library/hh272686.aspx">MSDN</a></cite> 
+				<cite>
+					<a href="https://msdn.microsoft.com/en-us/library/hh272686.aspx">MSDN</a>
+				</cite>
 			</section>
 			<section>
 				<h3>A table definition in SSDT</h3>
@@ -535,6 +579,8 @@
 						RETURN 0
 							
 				</code></pre>
+				<cite>
+					<a href="https://groupby.org/conference-session-abstracts/effective-unit-testing-for-sql-server/">GroupBy.org: Effective Unit Testing for SQL Server</a>" </cite>
 			</section>
 			<section>
 				<h3>Saving Publish Profiles</h3>
@@ -545,11 +591,77 @@
 				<img class="plain stretch" src="images/publishProfilesInSolutionExplorer.PNG" />
 			</section>
 			<section>
-					<h3>Right-click &rarr; Publish to Azure &rarr; DevOps!</h3>
-					<img class="plain stretch" src="images/rightclickpublish.png" />
-				</section>
-			
+				<h3>Right-click &rarr; Publish to Azure &rarr; DevOps!</h3>
+				<img class="plain stretch" src="images/rightclickpublish.png" />
+			</section>
+			<section>
+				<h3>Right-click Publish...</h3>
+				<img class="plain stretch" src="images/publishProfilesInSolutionExplorer.PNG" />
+			</section>
 
+
+			<section>
+				<h3>Code and Config</h3>
+				<img class="plain stretch" src="images/codeConfig.png" />
+				<cite>
+					<a href="https://12factor.net/config">The Twelve-Factor App - Config</a>
+				</cite>
+
+			</section>
+
+			<section>
+				<h2>A tale of two repos</h2>
+				<div id="left">
+					<img class="plain stretch" src="images/justthecode.png" />
+				</div>
+				<div id="right">
+					<img class="plain stretch" src="images/codeandconfig.png" />
+				</div>
+
+			</section>
+
+			<section>
+				<h2>Sharing is Caring?</h2>
+				<img class="plain stretch" src="images/cat-1209743_1920.jpg" />
+			</section>
+
+			<section>Shared developments - the reality
+				TODO: Picture of kittens fighting
+			</section>
+
+			<section>
+				<h3>"Right-Click&rarr;Publish" makes
+					<i>all</i> our environments shared...</h3>
+				<img class="plain stretch" src="images/publishProfilesInSolutionExplorer.PNG" />
+				<aside class="notes">In the speaker room...<br/>Sneak peek behind the scenes in Redmond, where the Visual Studio Team are working on right-click deploy</aside>
+			</section>
+
+			<section><h3>Redmond, WA, earlier...</h3>
+
+				<img class="plain stretch" src="images/CX1e2J.jpg"/>
+
+				<aside class = "notes">Cognitive Search is a funny thing...</aside>
+			</section>
+
+			<section>
+				<div class="tweet" data-src="https://twitter.com/damovisa/status/958913320873947136"></div>
+			</section>
+
+			<section>
+				<h3>Deploying a dacpac with
+					<code>sqlpackage.exe</code>
+				</h3>
+				<pre><code class="console stretch" data-trim> 
+				  C:\Users\Arapaima\source\repos\ChinookDb>"C:\Program Files (x86) 
+				  \Microsoft Visual Studio 14.0\ 
+				  Common7\IDE\Extensions\Microsoft\ 
+				  SQLDB\DAC\130\sqlpackage.exe" /Action:Publish 
+				  /SourceFile:.\ChinookDb\bin\Debug\ChinookDb.dacpac  
+				  /Profile:./ChinookDb/commonsettings.publish.xml  
+				  /TargetServerName:(local)  
+				  /TargetDatabaseName:ChinookNew 
+				  </code></pre>
+			</section>
 			<section>
 				<h3>The one true way...</h3>
 				<pre><code class="powershell stretch" data-trim>
@@ -651,7 +763,9 @@
 			<section>
 				<h4>Retrieving a Secret Variable</h4>
 				<img class="stretch" src="images/setEnvVar.png" />
-				<cite><a href="http://arapaima.uk/post/2017-10-23-vsts-secret-environment-variables/">Link to more detailed explanation</a></cite>
+				<cite>
+					<a href="http://arapaima.uk/post/2017-10-23-vsts-secret-environment-variables/">Link to more detailed explanation</a>
+				</cite>
 			</section>
 			<section>
 				<h4>Open the firewall</h4>
@@ -703,7 +817,7 @@
 				<h4>The default queue</h4>
 				<img class="stretch" src="images/productiondeploy.png" />
 			</section>
-		
+
 			<section>
 				<h4>Release Management</h4>
 				<img class="stretch" src="images/QAReleaseInProgress.png" />
@@ -720,17 +834,18 @@
 				<h4>Fire in the hole...</h4>
 				<img class="stretch" src="images/ProductionInProgress.png" />
 			</section>
-			
+
 			<section>
 				<h2>Summary</h2>
 				<ul>
 					<li class="fragment">Continous Delivery depends on automation</li>
 					<li class="fragment">SSDT and VSTS allow us to automate database deployments just like application deployments</li>
-					<li class="fragment">After everything is automated, the rest is down to you</li></ul>
-					<span class="fragment">
-						<hr/>
-						<h2>Thanks for listening</h2>
-					</span>
+					<li class="fragment">After everything is automated, the rest is down to you</li>
+				</ul>
+				<span class="fragment">
+					<hr/>
+					<h2>Thanks for listening</h2>
+				</span>
 
 				</ul>
 
@@ -764,7 +879,8 @@
 				{ src: 'plugin/markdown/marked.js' },
 				{ src: 'plugin/markdown/markdown.js' },
 				{ src: 'plugin/notes/notes.js', async: true },
-				{ src: 'plugin/highlight/highlight.js', async: true, callback: function () { hljs.initHighlightingOnLoad(); } }
+				{ src: 'plugin/highlight/highlight.js', async: true, callback: function () { hljs.initHighlightingOnLoad(); } },
+				{ src: 'plugin/embed-tweet/embed-tweet.js' }
 			]
 		});
 	</script>
