@@ -625,8 +625,8 @@
 				<img class="plain stretch" src="images/cat-1209743_1920.jpg" />
 			</section>
 
-			<section>Shared developments - the reality
-				TODO: Picture of kittens fighting
+			<section><h2>Sharing the Development Server</h2>
+				<img class="plain stretch" src="images/goats-2189621_1920.jpg" />
 			</section>
 
 			<section>
@@ -638,7 +638,7 @@
 
 			<section><h3>Redmond, WA, earlier...</h3>
 
-				<img class="plain stretch" src="images/CX1e2J.jpg"/>
+				<img class="plain stretch" src="images/CX1E2J.jpg"/>
 
 				<aside class = "notes">Cognitive Search is a funny thing...</aside>
 			</section>
@@ -646,7 +646,7 @@
 			<section>
 				<div class="tweet" data-src="https://twitter.com/damovisa/status/958913320873947136"></div>
 			</section>
-
+ 
 			<section>
 				<h3>Deploying a dacpac with
 					<code>sqlpackage.exe</code>
@@ -837,11 +837,17 @@
 
 			<section>
 				<h2>Summary</h2>
+				
 				<ul>
-					<li class="fragment">Continous Delivery depends on automation</li>
-					<li class="fragment">SSDT and VSTS allow us to automate database deployments just like application deployments</li>
-					<li class="fragment">After everything is automated, the rest is down to you</li>
+					<li class="fragment"><h3>It's not about the tools<span class="fragment">*</span>, it's about how you use them</h3>
+						<ul class="fragment">
+						<p><i>*Except Right-Click&rarr;Publish. It's all about Right-Click&rarr;Publish.</i></p>
+					</ul>
+					</li>
+					<li class="fragment"><h3>SSDT and VSTS allow us to automate database deployments just like application deployments</h3></li>
+					<li class="fragment"><h3>After everything is automated, the rest is up to you</h3></li>
 				</ul>
+			
 				<span class="fragment">
 					<hr/>
 					<h2>Thanks for listening</h2>
@@ -850,6 +856,11 @@
 				</ul>
 
 			</section>
+			<section data-background="images/bits1.png"><p></p></section>
+			<section data-background="images/bits2.gif"><p></p></section>
+				
+
+			
 
 
 
@@ -879,6 +890,7 @@
 				{ src: 'plugin/markdown/marked.js' },
 				{ src: 'plugin/markdown/markdown.js' },
 				{ src: 'plugin/notes/notes.js', async: true },
+				{ src: 'plugin/zoom-js/zoom.js', async: true },
 				{ src: 'plugin/highlight/highlight.js', async: true, callback: function () { hljs.initHighlightingOnLoad(); } },
 				{ src: 'plugin/embed-tweet/embed-tweet.js' }
 			]
